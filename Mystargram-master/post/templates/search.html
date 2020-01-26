@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{% static "js/main.js" %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <style>
+        .bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+    <title>Mystargram_main</title>
+</head>
+<body>
+<div class="bg_img">
+
+    <div id="fix_topnev">
+
+        <div id="common_head"> {# 공통사용 상단부분 버튼 4개. #}
+            <!--버튼0.홈로이동.-->
+            <a class="btn" href="{% url 'home' %}"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="mainpage" id="mainpage">main</a>
+            <!--버튼1.새글쓰기로이동.-->
+            <a class="btn" href="new_post"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="new_post" id="new_post">New Post</a>
+
+            <!--버튼2. 나의뉴스 팝업창.-->
+            <button type="button" class="btn"
+                    style="background-color:  #2dcee1; color:white; margin-right: 20px; margin-top: 80px; "
+                    name="my_news" id="my_news">My News
+                <span name="news_badge" id="news_badge" class="new badge"
+                      style="font-weight:bold; margin-top: 5%; background-color: magenta; display: none">
+                </span>
+            </button>
+            <div id="popoverb"
+                 style="z-index: 10; position: absolute; background-color: #aefdff; width: 300px; height: 150px;opacity: 0;"></div>
+
+            <!--버튼3. 나의페이지 넘어가기.-->
+            <a href="mypage" class="btn"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="my_page" id="my_page">My Page</a>
+
+            <!--버튼4. 로그아웃처리하기.-->
+            <a class="btn" href="logout"
+               style="background-color: #3D01E1; color:white;  margin-top: 80px;"
+               name="logout" id="logout">Logout</a>
+            </form>
+        </div>
+    </div>
+    <!--메인페이지 시작부.-->
+    {% for search_post, userpic, user_id, tags in search_result %}
+        {# 전체 판 #}
+        <div class="total" style="width: 50%; height: 70%; margin-left: 16%;margin-top: 3%">
+            <div class="centered_00">
+
+                {# 프사+아이디+팔로우버튼+수정삭제 판 #}
+                <div id="main_profile" style="">
+                    {# 프사+아이디+팔로우버튼 판#}
+                    <div id="main_follow"
+                         style="background-color: antiquewhite; float: left; width: 100%; height: 65px; font-weight: bold; font-size: 150%; display: flex;">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="select_user/{{ user_id }}" style="display: flex;">
+                            <img src="/static/img/{{ userpic }}" width="50" height="50"
+                                 style="border-radius: 50%; float: left;">
+                            <h5 style="float: left;">{{ user_id }}</h5>
+                        </a>
+                        <form action="follow_check" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user_id }}">
+                        </form>
+                    </div>
+                </div>
+
+                {# 사진 들어갈 판 #}
+                <div style="background-color: white; width: 100%; text-align: center; height: 350px;"><br><br><br><br>
+                    <img src="/static/img/{{ search_post.img1 }}" width="230" height="230"
+                         style="border: 1px solid dodgerblue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <img src="/static/img/{{ search_post.img2 }}" width="230" height="230"
+                         style="border: 1px solid dodgerblue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <img src="/static/img/{{ search_post.img3 }}" width="230" height="230"
+                         style="border: 1px solid dodgerblue;">
+                </div>
+                {# 하트버튼+하트수 판 #}
+                <div style="background-color: lightgreen; width: 100%; height: 50px; font-weight: bold; font-size: 125% ">
+                    <a href="#"><i class="material-icons"
+                                   style="float: left; color: red; font-size: 40px; margin-left: 30px">favorite_border</i></a>
+                    <a class="btn" style="float:left; background-color: dodgerblue; color:white; margin-left: 20px">하트
+                        수</a>
+                </div>
+                {# 내용 판 #}
+                <div style="background-color: pink; width: 100%; text-align: center; height: 50px; font-weight: bold; font-size: 125% ">
+                    {{ search_post.content }}
+                </div>
+                {# 태그 판 #}
+                <div style="background-color: khaki; width: 100%; text-align: center; height: 50px; font-weight: bold; font-size: 125%">
+                    {% for tag in tags %}
+                        #{{ tag }}
+                    {% endfor %}
+                    태그 나와라
+                </div>
+            </div>
+
+        </div>
+        </div> {# 전체판 end #}
+    {% endfor %}
+{# 바탕화면 div 모든 내용 안쪽으로 작성요망.#}
+</div>
+</body>
+</html>

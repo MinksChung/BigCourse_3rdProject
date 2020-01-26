@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <style>
+        {% load static %}
+        #bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-size: cover;
+        }
+    </style>
+    <title>Mystargram</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#login").click(function () { //로그인 버튼 클릭 시
+                $("#login_form").submit();
+            }) // login click end
+        }) // func end
+    </script>
+</head>
+<body>
+
+<div id="bg_img">  {# 바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+    {#   <a id="bg-link" href="/index.html"></a> 로고 누르면 인덱스로; 차후에 세션있으면 메인으로, 세션없으면 인덱스로 수정예정. #}
+
+    {#    <span id="common_head"> {# 공통사용 상단부분. #}
+    {#        <a class="btn"#}
+    {#           style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;">New Post</a>#}
+    {#        <a class="btn"#}
+    {#           style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px; ">My News</a>#}
+    {#        <a class="btn" style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;">My Page</a>#}
+    {#        <a class="btn" style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;">Logout</a>#}
+    {#    </span>#}
+    <div class="centered" style="margin-top:10%; width: 500px; height: 500px;">
+        <h3>Login</h3>
+        <br>
+        <form action="home" method="post" id="login_form">
+            {%csrf_token%}<!--암호화코드-->
+            아이디: <input type="text" name="user_id" id="id"><br>
+            비밀번호: <input type="text" name="pw" id="pw"><br>
+            <div style="margin-left: 2%; margin-top:5%;">
+                <input type="button" id="register" value="sign_up" onclick="location.href= '/register'" class="btn"
+                       style="background-color: #3D01E1;">
+                <input type="button" id="login" value="login" class="btn" style="margin-left: 50%;
+                background-color: #3D01E1;">
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+
+</body>
+</html>

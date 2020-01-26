@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <style>
+        {% load static %}
+        #bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-size: cover;
+        }
+    </style>
+    <title>Mystargram</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            data = {{ data.0 }}; // 아이디 중복확인 여부를 가져옴
+            idValue = "{{ id.0 }}"; // 아이디가 중복이 아닐시 해당 아이디 값을 가져옴
+            if(data == 0){ // 아이디가 중복일시
+                $("#check").html("중복된 아이디 입니다.");
+                data = 2; // 변수 초기화용
+            }else if(data == 1){ // 아이디가 중복이 아닐시
+                $("#check").html("회원가입 가능한 아이디 입니다."); //아이디가 중복이 아닐시
+                $("#id").val(idValue); // input 값에 아이디를 텍스트로 넣어줌
+                $("#out").html("<input type=\"submit\" id=\"btn_out\" value=\"사용하기\" class=\"btn\" style=\"float:left;\n" +
+                    "                background-color: #3D01E1;\">"); // 사용하기 버튼을 올림
+                data = 2; // 변수 초기화용
+            }
+            $("#btn_out").click(function (){ // 사용하기 버튼 클릭시
+                $(opener.document).find("#user_id").val(idValue) // 부모창인 signup.html의 id=user_id를 가진 input에 아이디값을 넣어줌
+                self.close(); //창 닫기
+            }) // btn_out end
+        }) // func end
+    </script>
+</head>
+<body>
+
+<div id="bg_img">  {# 바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+    {#   <a id="bg-link" href="/index.html"></a> 로고 누르면 인덱스로; 차후에 세션있으면 메인으로, 세션없으면 인덱스로 수정예정. #}
+
+    <div class="centered_confirm" style="padding: 15% 20% ;">
+         <form action="id_check" method="post">
+            {%csrf_token%}<!--암호화코드-->
+            <h6 style="color: #FFFFFF">아이디:</h6>
+            <input type="text" name="user_id" id="id" style="font-size: 15px; color: white;"><br>
+            <div id="check"></div>
+            <div id="out"></div>
+            <input type="submit" id="login" value="중복확인" class="btn" style="float:right;
+                background-color: #3D01E1;">
+        </form>
+    </div>
+</div>
+
+
+</body>
+</html>

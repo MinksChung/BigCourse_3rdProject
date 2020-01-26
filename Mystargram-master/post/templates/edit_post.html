@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{% static "js/main.js" %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <meta charset="UTF-8">
+    <style>
+        .bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+    <title>Mystargram</title>
+</head>
+<body>
+<div class="bg_img">  {# 바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+    {#   <a id="bg-link" href="/index.html"></a> 로고 누르면 인덱스로; 차후에 세션있으면 메인으로, 세션없으면 인덱스로 수정예정. #}
+    <div id="fix_topnev">
+        <div id="common_head"> {# 공통사용 상단부분 버튼 4개. #}
+            <!--버튼0.홈로이동.-->
+            <a class="btn" href="{% url 'home' %}"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="mainpage" id="mainpage">main</a>
+
+            <!--버튼1.새글쓰기로이동.-->
+            <a class="btn" href="new_post"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="new_post" id="new_post">New Post</a>
+
+            <!--버튼2. 나의뉴스 팝업창.-->
+            <button type="button" class="btn"
+                    style="background-color:  #2dcee1; color:white; margin-right: 20px; margin-top: 80px; "
+                    name="my_news" id="my_news">My News
+                <span name="news_badge" id="news_badge" class="new badge"
+                      style="font-weight:bold; margin-top: 5%; background-color: magenta; display: none">
+                </span>
+            </button>
+            <div id="popoverb"
+                 style="z-index: 10; position: absolute; background-color:  #aefdff; width: 300px; height: 150px;opacity: 0;"></div>
+
+            <!--버튼3. 나의페이지 넘어가기.-->
+            <a href="mypage" class="btn"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="my_page" id="my_page">My Page</a>
+
+            <!--버튼4. 로그아웃처리하기.-->
+            <a class="btn" href="logout"
+               style="background-color: #3D01E1; color:white;  margin-top: 80px;"
+               name="logout" id="logout">Logout</a>
+            </form>
+        </div>
+    </div>
+    <form name="confirm_edit_delete" method="post" action="confirm_edit_delete">  <!--수정/삭제  폼태그시작.-->
+        {% csrf_token %}
+        <span id="new_post_board">
+        <div class="row" id="new_post_board_writing">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <div id="profile_name_font" style="width: 500px; height: 100px;">
+                                <img style="float: left;margin-top:3.5%" id="profile_pic"
+                                     src="/static/img/{{ request.session.userpic }}">
+                                <h4 style="float: left; margin-left: 2%;">{{ request.session.id }}{{ post.id }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="input-field col s4"> <!--이미지1 넣는곳.-->
+                            <input type="hidden" name="pid" value="{{ dto.id }}">
+                            <input id="img1" name="img1" type="text" class="validate" value="{{ dto.img1 }}">
+                        </div>
+                        <div class="input-field col s4"> <!--이미지2 넣는곳.-->
+                            <input id="img2" name="img2" type="text" class="validate" value=" {{ dto.img2 }}">
+                        </div>
+                         <div class="input-field col s4"> <!--이미지3 넣는곳.-->
+                            <input id="img3" name="img3" type="text" class="validate" value=" {{ dto.img3 }}">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12"> <!--내용 넣는곳.-->
+                            <input id="post_content" name="content" type="text" class="validate"
+                                   value="{{ dto.content }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">  <!--태그 넣는곳.-->
+                          <input id="post_tag" name="tag" type="text" class="validate" value=" #{{ tags }}">
+                        </div>
+                    </div>
+            <!--수정/삭제.요청 버튼.-->
+                  <div>
+                      <input class="btn" style="background-color: #3D01E1;margin-left: 1%; float: right;" type="button"
+                             value="delete" onclick="post_delete()">
+                      <input class="btn" style="background-color: #3D01E1; margin-left: 1%; float: right;" type="button"
+                             value="edit" onclick="post_update()">
+                  </div>
+                <script>
+                function post_update() {
+                    if (confirm("내용을 수정하시겠습니까?")) {
+                        document.confirm_edit_delete.action = "post_update";
+                        document.confirm_edit_delete.submit();
+                    }
+                }
+
+                function post_delete() {
+                    if (confirm("삭제하시겠습니까?")) {
+                        document.confirm_edit_delete.action = "post_delete";
+                        document.confirm_edit_delete.submit();
+                    }
+                }
+                </script>
+        </div>
+    </span>
+    </form>  <!--폼태그 닫히는 곳.-->
+</div>
+{# ##########바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+
+</body>
+</html>

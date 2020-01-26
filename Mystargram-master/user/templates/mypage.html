@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{% static "js/main.js" %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>
+        $(function () {
+            index = 1; // 비밀번호 수정 div 기본값
+            $("#pw_update").hide(); // 비밀번호 수정 div 숨김(첫 화면)
+
+            $("#info_update").click(function () { // 비밀번호 수정버튼 클릭 시
+                if (index == 0) { // 이미 열려있다면,
+                    $("#pw_update").hide(); // 숨김
+                    index = 1;
+                } else { // 열려있지 않다면
+                    $("#pw_update").show(); // 보여줌
+                    index = 0;
+                } //else end
+            }) //info_update click end
+
+            $("#delete_btn").click(function () { // 회원 삭제 버튼
+                location.href = "user_delete";
+            }) // delete_btn click end
+        }) //func end
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <meta charset="UTF-8">
+    <style>
+        .bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .is-active {
+            background-color: tomato;
+            opacity: 30%;
+        }
+    </style>
+    <title>Mystargram</title>
+</head>
+<body>
+<div class="bg_img">  {# 바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+    <div id="fix_topnev">
+        <div id="common_head"> {# 공통사용 상단부분 버튼 4개. #}
+            <!--버튼0.홈로이동.-->
+            <a class="btn" href="{% url 'home' %}"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="mainpage" id="mainpage">main</a>
+
+            <!--버튼1.새글쓰기로이동.-->
+            <a class="btn" href="new_post"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="new_post" id="new_post">New Post</a>
+
+            <!--버튼2. 나의뉴스 팝업창.-->
+            <button type="button" class="btn"
+                    style="background-color:  #2dcee1; color:white; margin-right: 20px; margin-top: 80px; "
+                    name="my_news" id="my_news">My News
+                <span name="news_badge" id="news_badge" class="new badge"
+                      style="font-weight:bold; margin-top: 5%; background-color: magenta; display: none">
+                </span>
+            </button>
+            <div id="popoverb"
+                 style="z-index: 10; position: absolute; background-color:  #aefdff; width: 300px; height: 150px;opacity: 0;"></div>
+
+
+            <!--버튼4. 로그아웃처리하기.-->
+            <a class="btn" href="logout"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="logout" id="logout">Logout</a>
+            </form>
+        </div>
+    </div>
+
+    <section class="hero is-success" id="mypage_taps">
+        <div class="hero-foot">
+            <nav class="tabs is-boxed is-fullwidth is-large">
+                <div class="container">
+                    <ul class="tabs tabs-fixed-width tab-demo">
+                        <li id="myprofile_tab" class="tab is-active" onclick="openTab(event,'myprofile')"><a
+                                style="color:purple">My
+                            Profile</a></li>
+                        <li id="myfollows_tab" class="tab" onclick="openTab(event,'myfollows')"><a style="color:purple">My
+                            Follows</a></li>
+                        <li id="mypost_tab" class="tab" onclick="openTab(event,'mypost')"><a style="color:purple">My
+                            Post</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <div id="mypage_tap_content">
+        {#        나의프로필 탭 내부#}
+        <div id="myprofile" class="content-tab">
+            <div class="centered">
+                <form action="update_mypage" method="post" id="update_form">
+                    {% csrf_token %}
+                    <!--암호화코드-->
+                    <table style="height: 100px; width: auto;">
+                        <tr>
+                            <td rowspan="2"><img src="/static/img/{{ userpic }}" style="max-width: 100%;">
+                            </td>
+                            <td style="width: 50%;"><input type="text" name="name" id="name" required="required"
+                                                           value="{{ name }}"><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" name="intro" id="intro" required="required" value="{{ intro }}"></td>
+                        </tr>
+                    </table>
+
+                    <br>
+                    관심사: <input type="text" name="favorite" id="favorite" required="required"
+                                value="{{ favorite }}"><br>
+                    사진: <input type="text" name="userpic" id="userpic" required="required" value="{{ userpic }}"><br>
+
+
+                    <input type="submit" id="signup_btn" value="수정" class="btn"
+                           style="margin: 10px; background-color: #3D01E1; float: left">
+                </form>
+                <input type="button" id="info_update" value="비밀번호 수정" class="btn"
+                       style="margin: 10px; background-color: #3D01E1; float: left">
+                <input type="button" id="delete_btn" value="탈퇴" class="btn"
+                       style="margin: 10px; background-color: #3D01E1;"><br>
+                <div id="pw_update" style="display: inline-block">
+
+                    <form action="pw_update" method="post">
+                        {% csrf_token %}
+                        <input type="password" name="pw" id="pw" required="required" value="{{ pw }}"><br>
+                        <input type="submit" id="pwUpdate_btn" value="수정" class="btn"
+                               style="margin: 10px; background-color: #e16f25;"><br>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {#        나의팔로우스 탭 내부#}
+        <div id="myfollows" class="content-tab" style="display:none; ">
+            <div>
+                <h4 style="float:left;margin-top:4%; margin-left:28%;">My Followee</h4>
+                <h4 style="float:left;margin-top:4%;margin-left:23%; margin-right: 12%">My Follower</h4>
+            </div>
+            <div style="font-size:28px; float:left; margin-left:23%; background-color:wheat; overflow:auto; width:400px; height:400px;">
+                {% for x, name in my_followee %}  {# 나의 팔로위 데이터의 출력 #}
+                    <form name="del_followship" action="del_followship" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="fid" value="{{ x.followee_id }}">
+                        ID: {{ x.followee_id }} 이름:{{ name }}
+                        <input type="submit" value="팔로잉취소" class="btn"
+                               style="background-color: cornflowerblue; float: right; "
+                        ><br>
+                    </form>
+                {% endfor %}
+                <script>
+                    function del_fwee() { {# 나의 팔로위 취소신청 확인 #}
+                        if (confirm("팔로잉을 취소하시겠습니까?")) {
+                            document.del_followship.action = "del_followship";
+                        }
+                        console.log(document.del_followship)
+                        document.del_followship.submit();
+                    }
+                </script>
+            </div>
+
+            <div style="font-size:28px;float:left; margin-left:12%;  background-color:wheat; overflow:auto; width:400px; height:400px;">
+                {% for x, name in my_follower %}
+                    <a href="#">ID: {{ x.follower_id }} 이름:{{ name }}</a><br>
+                {% endfor %}
+            </div>
+        </div>
+
+        {#        나의포스트 탭 내부#}
+        <div id="mypost" class="content-tab" style="display:none; position: relative;">
+            <div class="mypage_mypost_pics" style="padding-top: 60px;padding-left: 80px; float: left; display:inline; width: 1800px;">
+                {% for x in my_post %}
+                    <form action="detail" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ x.id }}" name="pid">
+                        <div class="bt_on_img_container"
+                             style="float: left;  width: 300px;  margin-right:3%; margin-bottom: 2%; display:inline;">
+                            <img class="bt_on_img_img" src="/static/img/{{ x.img3 }}" alt="Snow" style="">
+                            <button type="submit" class="bt_on_img_btn" style="">수정/삭제</button>
+                        </div>
+                    </form>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        function openTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("content-tab");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < x.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " is-active";
+        }
+    </script>
+</div>
+
+{# ##########바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+
+</body>
+</html>

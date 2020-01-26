@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{% static "js/main.js" %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <style>
+        .bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+    <title>Mystargram_main</title>
+</head>
+<body>
+<div class="bg_img">
+    {#    메인화면의 태그검색창 #}
+    <div style="width: 400px; height: 100px; margin-left: 34%; padding-top: 6%; position:absolute;">
+        <form action="search" method="post">
+            {% csrf_token %}
+            <div style="float: left">
+                <input list="box" placeholder="검색조건" name="box" style="width: 90px">
+                <datalist id="box" style="float: left">
+                    <option value="" selected="selected">-- 선택 --</option>
+                    <option value="아이디">아이디</option>
+                    <option value="태그">태그</option>
+                </datalist>
+            </div>
+            <div style="float: left">
+                <input type="text" name="input_data" style="float: left">
+            </div>
+            <div style="float: left">
+                <input type="submit" class="btn" value="검색" style="float: left; background-color: #3D01E1">
+            </div>
+        </form>
+    </div>
+    <div id="fix_topnev">
+
+        <div id="common_head"> {# 공통사용 상단부분 버튼 4개. #}
+            <!--버튼1.새글쓰기로이동.-->
+            <a class="btn" href="new_post"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="new_post" id="new_post">New Post</a>
+
+            <!--버튼2. 나의뉴스 팝업창.-->
+            <button type="button" class="btn"
+                    style="background-color:  #2dcee1; color:white; margin-right: 20px; margin-top: 80px; "
+                    name="my_news" id="my_news">My News
+                <span name="news_badge" id="news_badge" class="new badge"
+                      style="font-weight:bold; margin-top: 5%; background-color: magenta; display: none">
+                </span>
+            </button>
+            <div id="popoverb"
+                 style="z-index: 10; position: absolute; background-color: #aefdff; width: 300px; height: 150px;opacity: 0;"></div>
+
+            <!--버튼3. 나의페이지 넘어가기.-->
+            <a href="mypage" class="btn"
+               style="background-color: #3D01E1; color:white; margin-right: 20px; margin-top: 80px;"
+               name="my_page" id="my_page">My Page</a>
+
+            <!--버튼4. 로그아웃처리하기.-->
+            <a class="btn" href="logout"
+               style="background-color: #3D01E1; color:white;  margin-top: 80px;"
+               name="logout" id="logout">Logout</a>
+            </form>
+        </div>
+    </div>
+    <!--메인페이지 시작부.-->
+    <div>
+        <div style="margin-top: 3%;>
+                {% for post, userpic, user_id, tags in result %}
+                    {% csrf_token %}
+                    {# 전체 판 #}
+                    <div class="total">
+                        <div class="centered_00" style="margin-bottom: 15px;">
+                            <div id="main_profile"style="margin-top: 15px; padding-left: 15px;">
+                                {# 프사+아이디+팔로우버튼 판#}
+                                <div id="main_follow"
+                                     style="float: left; width: 65%; height: 65px; font-weight: bold; font-size: 150%; display: flex;">
+                                    <a href="uid_{{ user_id }}" style="display: flex;">
+                                        <img src="/static/img/{{ userpic }}" width="50" height="50"
+                                             style="border-radius: 50%; float: left;">
+                                        <h5 style="float: left;">{{ user_id }}</h5></a>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div style=" background-color: #fbfff6; width: 100%; text-align: center; height: 350px;">
+                            <br><br><br><br>
+
+                            <form action="{% url 'gpsmap' %}" method="POST" target="print_popup"
+                                    {# name=gpsmap으로 연결,  팝업창으로 출력페이지 연결 설정. #}
+                                  onsubmit="window.open('about:blank','print_popup','width=630px,height=630px');">
+                                    {# 연결페이지로 오픈될 윈도우의 크기설정 #}
+                                {% csrf_token %}
+                                <input value="{{ post.img1 }}" type="hidden" name="the_pic"> {# views 함수로 넘길 img의 이름설정. #}
+                                <div class="bt_on_img_container"
+                                     style="float: left; position: relative; margin-left:14%; margin-bottom: 2%;z-index: 8">
+                                    <img class="bt_on_img_img" src="/static/img/{{ post.img1 }}" width="230"
+                                         height="230"
+                                         style="border: 1px solid dodgerblue;"> {# 이미지출력. #}
+                                    {% if 'gps' in post.img1%} {# 임의설정 이미지명에 gsp가 포함되어 있는 경우, #}
+                                    <button type="submit" class="bt_on_img_btn" style="">위치보기</button>
+                                    {% endif %} {# 위치보기 버튼을 추가처리 #}
+                                </div>
+                            </form>
+                             <form action="{% url 'gpsmap' %}" method="POST" target="print_popup"
+                                  onsubmit="window.open('about:blank','print_popup','width=630px,height=630px');">
+                                {% csrf_token %}
+                                <input value="{{ post.img2 }}" type="hidden" name="the_pic">
+                                <div class="bt_on_img_container"
+                                     style="float: left; position: relative; margin-left:6%; margin-bottom: 2%;z-index: 8">
+                                    <img class="bt_on_img_img" src="/static/img/{{ post.img2 }}" width="230"
+                                         height="230"
+                                         style="border: 1px solid dodgerblue;">
+                                    {% if 'gps' in post.img2%}
+                                    <button type="submit" class="bt_on_img_btn" style="">위치보기</button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        <form action="{% url 'gpsmap' %}" method="POST" target="print_popup"
+                                  onsubmit="window.open('about:blank','print_popup','width=630px,height=630px');">
+                                {% csrf_token %}
+                                <input value="{{ post.img3 }}" type="hidden" name="the_pic">
+                                <div class="bt_on_img_container"
+                                     style="float: left; position: relative; margin-left:6%; margin-bottom: 2%;z-index: 8">
+                                    <img class="bt_on_img_img" src="/static/img/{{ post.img3 }}" width="230"
+                                         height="230"
+                                         style="border: 1px solid dodgerblue;">
+                                    {% if 'gps' in post.img3%}
+                                    <button type="submit" class="bt_on_img_btn" style="">위치보기</button>
+                                    {% endif %}
+                                </div>
+                            </form>
+
+
+{#                            <img src="/static/img/{{ post.img2 }}" width="230px" height="230px"#}
+{#                                 style="border: 1px solid dodgerblue; margin-left: -10%;margin-right: 3%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#}
+{#                            <img src="/static/img/{{ post.img3 }}" width="230" height="230"#}
+{#                                 style="border: 1px solid dodgerblue;">#}
+                        </div>
+
+                        <div style="background-color: #eeb7cc; width: 100%; height: 50px; font-weight: bold; font-size: 125% ">
+                            <a><i class="material-icons"
+                                  style="float: left; color: red; font-size: 40px; margin-left: 30px">
+                                <div onclick="heartAction({{ post.id }})" id="{{ post.id }}" class="heart_div">
+                                    favorite_border
+                                </div>
+                            </i></a>
+                            <a class="btn"
+                               style="float:left; background-color: dodgerblue; color:white; margin-left: 20px"
+                               id="heart{{ post.id }}">하트
+                                수</a>
+
+                        </div>
+
+
+                        <script>
+                            $(function () { //화면 출력 시 하트 있는거에 표시하기 위함 입니다!
+                                {% for heartList in heartList %} // 하트가 있는 게시물의 아이디를 보여줍니다!
+                                    $("#{{ heartList }}").text("favorite"); // 하트가 있는 게시물에 배경있는 하트를 보여줍니다!
+                                {% endfor %} //하트 for 문 끝
+                                {% for post, userpic, user_id, tags in result %}
+
+                                {% endfor %}
+                            }); // func end
+
+                            function heartAction(post_id) { // 하트 클릭시 실행되는 함수입니다.
+                                $.ajax({ // 하트를 실시간으로 적용하는 ajax 입니다.
+                                    url: "heart?pid=" + post_id + "&user_id={{ request.session.id }}", //urls의 heart에 게시물 아이디와 유저아이디를 넘겨줍니다.
+                                    type: "get", //get 방식으로 넘겨 줍니다.
+                                    dataType: "json",
+                                    success: function (response) {
+                                        if (response.result == "delete") { // 이미 하트가 칠해져있다면,
+                                            $("#" + post_id + "").text("favorite_border"); // 속이 빈 하트를 보여줍니다.
+                                        } else if (response.result == "save") { // 하트가 비어있다면,
+                                            $("#" + post_id + "").text("favorite"); // 하트의 속을 채워줍니다.
+                                        } // else end
+                                        $("#heart" + post_id + "").text("하트" + response.heartCount);
+                                    } // success end
+                                }); //ajax end
+                            } // heart end
+
+                        </script>
+
+                        <div style="background-color: #ff5d9f; width: 100%; text-align: center; height: 50px; font-weight: bold; font-size: 125% ">
+                            {{ post.content }}
+                        </div>
+
+                        <div style="background-color: #f00c67; width: 100%; text-align: center; height: 50px; font-weight: bold; font-size: 125%">
+                            {% for tag in tags %}
+                                #{{ tag }}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+
+
+
+
+                {% endfor %}
+             <div class="centered_shop" style="float: left; clear:both;"> {# 좌측크롤링파트 #}
+            </div>
+</div>
+</div>
+<input type="hidden" id="img">
+<input type="hidden" id="link">
+<input type="hidden" id="name">
+<input type="hidden" id="price">
+<input type="hidden" id="img2">
+
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+    var arrayPrice = new Array()
+    var arrayImg = new Array()
+    var arrayName = new Array()
+    var arrayLink = new Array()
+
+    $(function () {
+
+        {% for img  in dic.img %}
+            arrayImg.push("{{ img }}")
+        {% endfor %}
+        {% for price  in dic.price %}
+            arrayPrice.push("{{ price }}")
+        {% endfor %}
+        {% for name  in dic.name %}
+            arrayName.push("{{ name }}")
+        {% endfor %}
+        {% for link  in dic.link %}
+            arrayLink.push("{{ link }}")
+        {% endfor %}
+
+
+        for (var i = 0; i < 6; i++) {
+            $(".centered_shop").append("<div class='div_box'  onclick='reply_click(this.id)' id='" + i + "'><img src='" + arrayImg[i] + "'><br>" + arrayPrice[i] + "<br>" + arrayName[i] + "</div>");
+        }
+
+    }) // func end
+    function reply_click(clicked) {
+        i = Number(clicked);
+        $("#img").val("<div onclick='reply_click(this.id)' id='" + i + "'><img src='" + arrayImg[i] + "'><br>" + arrayPrice[i] + "<br>" + arrayName[i] + "</div>");
+        $("#link").val(arrayLink[i]);
+        $("#name").val(arrayName[i]);
+        $("#price").val(arrayPrice[i]);
+        $("#img2").val(arrayImg[i]);
+        {#alert(arrayPrice[i])#}
+        var url = "shop_basket";
+        var name = "shop_basket";
+        var option = "width = 560, height = 315, top = 100, left = 200, location = no"
+        window.open(url, name, option);
+    }
+
+</script>
+</html>

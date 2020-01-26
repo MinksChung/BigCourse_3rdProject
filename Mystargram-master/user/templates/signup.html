@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "source/style.css" %}">
+    <style>
+        {
+        %
+        load
+        static
+        %
+        }
+
+        .bg_img {
+            border: 0;
+            padding: 0;
+            left: 0;
+            top: 0;
+            min-height: 100%;
+            background-image: url({% static "img/bg_img.png" %});
+            background-position: top, left;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+    </style>
+    <title>Mystargram</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script>
+        $(function () {
+            $("#id_confirm").click(function () {
+                var url = "id_confirm";
+                var name = "id_confirm";
+                var option = "width = 560, height = 315, top = 100, left = 200, location = no"
+                window.open(url, name, option);
+            }) // confirm click end
+            $("#signup_btn").click(function () {
+                if ($("#user_id").val() == "") {
+                    alert("중복확인을 해주세요.")
+                } else {
+                    $("#signup_form").submit()
+                }
+
+            })// signup_btn end
+        }) //func end
+
+
+    </script>
+</head>
+
+<body>
+<div class="bg_img"> {# 바탕화면 div 모든 내용 안쪽으로 작성요망. #}
+    {#   <a id="bg-link" href="/index.html"></a> 로고 누르면 인덱스로; 차후에 세션있으면 메인으로, 세션없으면 인덱스로 수정예정. #}
+
+    <div class="centered" style="height: 85%;">
+        <h3>Sign Up</h3><br><br>
+        <form action="signup" method="post" id="signup_form">
+            {% csrf_token %}
+            <!--암호화코드-->
+            <div>
+                아이디: <input type="text" name="user_id" id="user_id" readonly style="width: 69%;">
+                <a class="btn" id="id_confirm"
+                   style="background-color: #3D01E1; color:white; float: right; margin-top: 5px; margin-bottom: 20px;">아이디
+                    중복확인</a>
+            </div>
+            <br>
+            <span>이름: <input type="text" name="name" id="name" required></span><br>
+            <span>비밀번호: <input type="text" name="pw" id="pw" required></span><br>
+            <span>소개글: <input type="text" name="intro" id="intro" required></span><br>
+            <span>사진: <input type="text" name="userpic" id="userpic" required></span><br>
+            <span>관심사: <input type="text" name="favorite" id="favorite" required></span><br><br>
+            <input type="button" id="signup_btn" value="회원가입" class="btn"
+                       style="margin-left: 46%; background-color: #3D01E1;"><br>
+
+        </form>
+    </div>
+</div>
+
+</body>
+
+</html>
